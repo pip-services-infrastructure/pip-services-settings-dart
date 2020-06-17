@@ -16,12 +16,12 @@ All input and output data is serialized in JSON format. Errors are returned in [
 Retrieves settings section ids filtered by set of criteria.
 
 **Request body:** 
-- correlation_id: string - (optional) unique id that identifies distributed transaction
-- filter: Object
-  - id: string - (optional) unique section id
-  - id_starts: string - (optional) starting id substring
-  - search: string - (optional) search by id substring
-- paging: Object
+- correlation_id: String - (optional) unique id that identifies distributed transaction
+- filter: FilterParams
+  - id: String - (optional) unique section id
+  - id_starts: String - (optional) starting id substring
+  - search: String - (optional) search by id substring
+- paging: PagingParams
   - skip: int - (optional) start of page (default: 0). Operation returns paged result
   - take: int - (optional) page length (max: 100). Operation returns paged result
 
@@ -33,12 +33,12 @@ Data page with settings ids
 Retrieves settings sections filtered by set of criteria.
 
 **Request body:** 
-- correlation_id: string - (optional) unique id that identifies distributed transaction
-- filter: Object
-  - id: string - (optional) unique section id
-  - id_starts: string - (optional) starting id substring
-  - search: string - (optional) search by id substring
-- paging: Object
+- correlation_id: String - (optional) unique id that identifies distributed transaction
+- filter: FilterParams
+  - id: String - (optional) unique section id
+  - id_starts: String - (optional) starting id substring
+  - search: String - (optional) search by id substring
+- paging: PagingParams
   - skip: int - (optional) start of page (default: 0). Operation returns paged result
   - take: int - (optional) page length (max: 100). Operation returns paged result
 
@@ -50,7 +50,7 @@ Data page with settings sections
 Gets settings section by its unique id
 
 **Request body:**
-- id: string - unique section id
+- id: String - unique section id
 
 **Response body:**
 Section parameters
@@ -60,8 +60,8 @@ Section parameters
 Sets settings section by its unique ud
 
 **Request body:**
-- id: string - unique section id
-- parameters: object - new section parameters
+- id: String - unique section id
+- parameters: ConfigParams - new section parameters
 
 **Response body:**
 Updated section parameters
@@ -71,9 +71,9 @@ Updated section parameters
 Modify settings section, perform partial updates and increments
 
 **Request body:**
-- id: string - unique section id
-- update_parameters: object - section parameters for partial updates
-- increment_parameters: object - section parameters for increments
+- id: String - unique section id
+- update_parameters: ConfigParams - section parameters for partial updates
+- increment_parameters: ConfigParams - section parameters for increments
 
 **Response body:**
 Updated section parameters

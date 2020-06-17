@@ -54,13 +54,13 @@ void main() {
 
     test('CRUD Operations', () async {
       // Create one section
-      var resp = await rest.post(url + '/v1/settings/set_section', headers: {
-        'Content-Type': 'application/json'
-      }, body: jsonEncode({
-        'id': 'test.1',
-        'parameters':
-            ConfigParams.fromTuples(['key1', 'value11', 'key2', 'value12'])
-      }));
+      var resp = await rest.post(url + '/v1/settings/set_section',
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({
+            'id': 'test.1',
+            'parameters':
+                ConfigParams.fromTuples(['key1', 'value11', 'key2', 'value12'])
+          }));
 
       var parameters = ConfigParams(jsonDecode(resp.body));
 
@@ -68,13 +68,13 @@ void main() {
       expect(parameters['key1'], 'value11');
 
       // Create another section
-      resp = await rest.post(url + '/v1/settings/modify_section', headers: {
-        'Content-Type': 'application/json'
-      }, body: jsonEncode({
-        'id': 'test.2',
-        'update_parameters': ConfigParams.fromTuples(['key1', 'value21']),
-        'increment_parameters': ConfigParams.fromTuples(['key2', 1])
-      }));
+      resp = await rest.post(url + '/v1/settings/modify_section',
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({
+            'id': 'test.2',
+            'update_parameters': ConfigParams.fromTuples(['key1', 'value21']),
+            'increment_parameters': ConfigParams.fromTuples(['key2', 1])
+          }));
 
       parameters = ConfigParams(jsonDecode(resp.body));
 
@@ -99,8 +99,8 @@ void main() {
       resp = await rest.post(url + '/v1/settings/get_sections',
           headers: {'Content-Type': 'application/json'}, body: '{}');
 
-      var sectionsPage = DataPage<SettingsSectionV1>.fromJson(json.decode(resp.body),
-          (item) {
+      var sectionsPage =
+          DataPage<SettingsSectionV1>.fromJson(json.decode(resp.body), (item) {
         var event = SettingsSectionV1();
         event.fromJson(item);
         return event;
@@ -113,7 +113,10 @@ void main() {
       resp = await rest.post(url + '/v1/settings/get_section_ids',
           headers: {'Content-Type': 'application/json'}, body: '{}');
 
-      var sectionIdsPage = DataPage<String>.fromJson(json.decode(resp.body), (item) { return item; });
+      var sectionIdsPage =
+          DataPage<String>.fromJson(json.decode(resp.body), (item) {
+        return item;
+      });
 
       expect(sectionIdsPage, isNotNull);
       expect(sectionIdsPage.data.length, 2);

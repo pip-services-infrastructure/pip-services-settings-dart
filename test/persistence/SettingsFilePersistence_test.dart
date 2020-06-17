@@ -18,19 +18,19 @@ void main() {
     });
 
     tearDown(() async {
-      persistence.close(null);
+      await persistence.close(null);
     });
 
     test('Get and set', () async {
-      fixture.testGetAndSet();
+      await fixture.testGetAndSet();
     });
 
     test('Set parameter', () async {
-      fixture.testSetParameter();
+      await fixture.testSetParameter();
     });
 
     test('Increment parameter', () async {
-      fixture.testIncrementParameter();
+      await fixture.testIncrementParameter();
     });
   });
 }

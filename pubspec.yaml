@@ -1,8 +1,8 @@
 name: pip_services_settings
 version: 1.0.0
 author: Sergey Seroukhov
-description: Settings Microservice
-homepage: https://github.com/
+description: This is a settings microservice from Pip.Services library. It manages system settings separated by individual sections.
+homepage: https://github.com/pip-services-infrastructure/pip-services-settings-dart
 
 environment:
   sdk: ">=2.0.0 <3.0.0"

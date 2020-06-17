@@ -35,8 +35,7 @@ class SettingsSectionV1 implements IStringIdentifiable {
   ConfigParams parameters;
   DateTime update_time;
 
-  SettingsSectionV1();
-  SettingsSectionV1.from(String id, [ConfigParams parameters, DateTime update_time]);
+  SettingsSectionV1({String id, ConfigParams parameters, DateTime update_time});
 
   void fromJson(Map<String, dynamic> json);
   Map<String, dynamic> toJson();

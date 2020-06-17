@@ -6,7 +6,7 @@ import 'package:pip_services_settings/pip_services_settings.dart';
 class SettingsMongoDbPersistence
     extends IdentifiableMongoDbPersistence<SettingsSectionV1, String>
     implements ISettingsPersistence {
-  SettingsMongoDbPersistence() : super('settings') {}
+  SettingsMongoDbPersistence() : super('settings');
 
   static String fieldFromPublic(String field) {
     if (field == null) return null;
@@ -45,11 +45,12 @@ class SettingsMongoDbPersistence
   }
 
   @override
-  Map<String, dynamic> convertFromPublic(dynamic value, {bool createUid = false}) {
+  Map<String, dynamic> convertFromPublic(dynamic value,
+      {bool createUid = false}) {
     if (value == null) return null;
 
     var parameters = SettingsMongoDbPersistence.mapFromPublic(value.parameters);
-    
+
     value = {
       '_id': value.id,
       'parameters': parameters,
@@ -68,9 +69,9 @@ class SettingsMongoDbPersistence
 
     var search = filter.getAsNullableString('search');
     if (search != null) {
-      var searchRegex = new RegExp(search, caseSensitive: false);
+      var searchRegex = RegExp(search, caseSensitive: false);
       criteria.add({
-        '_id': {r'$regex': searchRegex.pattern }
+        '_id': {r'$regex': searchRegex.pattern}
       });
     }
 
@@ -79,22 +80,23 @@ class SettingsMongoDbPersistence
 
     var idStarts = filter.getAsNullableString('id_starts');
     if (idStarts != null) {
-      var idStartsRegex = new RegExp(r'^' + idStarts, caseSensitive: false);
+      var idStartsRegex = RegExp(r'^' + idStarts, caseSensitive: false);
       criteria.add({
-        '_id': {r'$regex': idStartsRegex.pattern }
+        '_id': {r'$regex': idStartsRegex.pattern}
       });
     }
 
-    return criteria.length > 0 ? {r'$and': criteria} : {};
+    return criteria.isNotEmpty ? {r'$and': criteria} : {};
   }
 
   @override
   Future<DataPage<SettingsSectionV1>> getPageByFilter(
       String correlationId, FilterParams filter, PagingParams paging) async {
-    return super.getPageByFilterEx(
-        correlationId, this.composeFilter(filter), paging, null);
+    return super
+        .getPageByFilterEx(correlationId, composeFilter(filter), paging, null);
   }
 
+  @override
   Future<SettingsSectionV1> set(
       String correlationId, SettingsSectionV1 item) async {
     if (item == null) return Future.value(null);
@@ -102,56 +104,56 @@ class SettingsMongoDbPersistence
     var parameters = item.parameters.getAsObject();
     parameters = SettingsMongoDbPersistence.mapFromPublic(parameters);
 
-    var result = await this.collection.findAndModify(query: {
-      '_id': item.id
-    }, update: {'parameters': item.parameters, 'update_time': DateTime.now() }
-    , returnNew: true, upsert: true);
+    var result = await collection.findAndModify(
+        query: {'_id': item.id},
+        update: {'parameters': item.parameters, 'update_time': DateTime.now()},
+        returnNew: true,
+        upsert: true);
 
-    this.logger.trace(
-        correlationId, "Set in %s with id = %s", [this.collection, item.id]);
+    logger
+        .trace(correlationId, 'Set in %s with id = %s', [collection, item.id]);
 
-
-    var newItem = result != null ? this.convertToPublic(result) : null;
+    var newItem = result != null ? convertToPublic(result) : null;
     return newItem;
   }
 
+  @override
   Future<SettingsSectionV1> modify(String correlationId, String id,
       ConfigParams updateParams, ConfigParams incrementParams) async {
-
-    var partial = Map<String, dynamic>();
-    partial[r'$set'] = Map<String, dynamic>();    
+    var partial = <String, dynamic>{};
+    partial[r'$set'] = <String, dynamic>{};
     partial[r'$set']['update_time'] = DateTime.now();
 
     // Update parameters
     if (updateParams != null) {
       for (var key in updateParams.keys) {
         if (updateParams.containsKey(key)) {
-          var field = 'parameters.' + SettingsMongoDbPersistence.fieldFromPublic(key);
+          var field =
+              'parameters.' + SettingsMongoDbPersistence.fieldFromPublic(key);
           partial[r'$set'][field] = updateParams[key];
         }
       }
     }
 
     // Increment parameters
-    if (incrementParams != null && incrementParams.length > 0) {
-      partial[r'$inc'] = Map<String, dynamic>();  
+    if (incrementParams != null && incrementParams.isNotEmpty) {
+      partial[r'$inc'] = <String, dynamic>{};
       for (var key in incrementParams.keys) {
         if (incrementParams.containsKey(key)) {
           var increment = incrementParams.getAsLongWithDefault(key, 0);
-          var field = 'parameters.' + SettingsMongoDbPersistence.fieldFromPublic(key);
+          var field =
+              'parameters.' + SettingsMongoDbPersistence.fieldFromPublic(key);
           partial[r'$inc'][field] = increment;
         }
       }
     }
 
-    var result = await this.collection.findAndModify(
+    var result = await collection.findAndModify(
         query: {'_id': id}, update: partial, returnNew: true, upsert: true);
 
-    this
-        .logger
-        .trace(correlationId, "Modified in %s by %s", [this.collection, id]);
+    logger.trace(correlationId, 'Modified in %s by %s', [collection, id]);
 
-    var newItem = result != null ? this.convertToPublic(result) : null;
+    var newItem = result != null ? convertToPublic(result) : null;
     return newItem;
   }
 }

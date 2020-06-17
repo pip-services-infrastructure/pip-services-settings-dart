@@ -7,12 +7,12 @@ import 'package:pip_services_settings/pip_services_settings.dart';
 class SettingsMemoryPersistence
     extends IdentifiableMemoryPersistence<SettingsSectionV1, String>
     implements ISettingsPersistence {
-  SettingsMemoryPersistence() : super() {}
+  SettingsMemoryPersistence() : super();
 
   bool matchString(String value, String search) {
     if (value == null && search == null) return true;
     if (value == null || search == null) return false;
-    return value.toLowerCase().indexOf(search) >= 0;
+    return value.toLowerCase().contains(search);
   }
 
   dynamic composeFilter(FilterParams filter) {
@@ -22,7 +22,7 @@ class SettingsMemoryPersistence
     var idStarts = filter.getAsNullableString('id_starts');
 
     return (item) {
-      if (search != null && !this.matchString(item.id, search)) return false;
+      if (search != null && !matchString(item.id, search)) return false;
       if (id != null && id != item.id) return false;
       if (idStarts != null && !item.id.startsWith(idStarts)) return false;
       return true;
@@ -32,8 +32,8 @@ class SettingsMemoryPersistence
   @override
   Future<DataPage<SettingsSectionV1>> getPageByFilter(
       String correlationId, FilterParams filter, PagingParams paging) async {
-    return super.getPageByFilterEx(
-        correlationId, this.composeFilter(filter), paging, null);
+    return super
+        .getPageByFilterEx(correlationId, composeFilter(filter), paging, null);
   }
 
   @override
@@ -50,16 +50,16 @@ class SettingsMemoryPersistence
   @override
   Future<SettingsSectionV1> modify(String correlationId, String id,
       ConfigParams updateParams, ConfigParams incrementParams) async {
-    var index = this.items.indexWhere((x) => x.id == id);
+    var index = items.indexWhere((x) => x.id == id);
 
-    SettingsSectionV1 item =
-        index >= 0 ? this.items[index] : new SettingsSectionV1.from(id);
+    var item = index >= 0 ? items[index] : SettingsSectionV1(id: id);
 
     // Update parameters
     if (updateParams != null) {
       for (var key in updateParams.keys) {
-        if (updateParams.containsKey(key))
+        if (updateParams.containsKey(key)) {
           item.parameters.setAsObject(key, updateParams[key]);
+        }
       }
     }
 
@@ -78,11 +78,11 @@ class SettingsMemoryPersistence
     // Update time
     item.update_time = DateTime.now();
 
-    if (index < 0) this.items.add(item);
+    if (index < 0) items.add(item);
 
-    this.logger.trace(correlationId, "Modified item by %s", [id]);
+    logger.trace(correlationId, 'Modified item by %s', [id]);
 
-    await this.save(correlationId);
+    await save(correlationId);
 
     return Future.value(item);
   }
